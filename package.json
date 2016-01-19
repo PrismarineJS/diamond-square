@@ -1,0 +1,39 @@
+{
+  "name": "diamond-square",
+  "version": "0.0.0",
+  "description": "A diamond square minecraft generation",
+  "main": "dist.js",
+  "scripts": {
+    "compile": "babel diamond_square.js > dist.js",
+    "prepublish": "npm run compile && require-self",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "tonicExampleFilename": "example.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PrismarineJS/diamond-square.git"
+  },
+  "keywords": [
+    "minecraft",
+    "diamond-square",
+    "generation",
+    "prismarinejs"
+  ],
+  "author": "Romain Beaumont <romain.rom1@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PrismarineJS/diamond-square/issues"
+  },
+  "homepage": "https://github.com/PrismarineJS/diamond-square#readme",
+  "dependencies": {
+    "prismarine-chunk": "^0.3.2",
+    "random-seed": "^0.3.0",
+    "vec3": "^0.1.3"
+  },
+  "devDependencies": {
+    "minecraft-data": "^0.17.0",
+    "prismarine-world": "^0.5.5",
+    "require-self": "^0.1.0",
+    "babel": "^5.8.34"
+  }
+}
