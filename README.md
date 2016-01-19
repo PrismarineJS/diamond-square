@@ -18,3 +18,9 @@ world.getBlock(new Vec3(3,50,3)).then(block => console.log(JSON.stringify(block,
 * @JWo1F did the initial code for diamond-square in flying-squid
 * @demipixel
 * @rom1504
+
+## History
+
+### 0.0.0
+
+* first version, imported from flying-squid, works
