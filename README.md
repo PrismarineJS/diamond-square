@@ -21,6 +21,10 @@ world.getBlock(new Vec3(3,50,3)).then(block => console.log(JSON.stringify(block,
 
 ## History
 
+### 1.0.0
+
+* update dependencies
+
 ### 0.0.0
 
 * first version, imported from flying-squid, works
