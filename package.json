@@ -26,13 +26,13 @@
   },
   "homepage": "https://github.com/PrismarineJS/diamond-square#readme",
   "dependencies": {
-    "prismarine-chunk": "^0.3.2",
+    "prismarine-chunk": "^1.0.0",
     "random-seed": "^0.3.0",
     "vec3": "^0.1.3"
   },
   "devDependencies": {
-    "minecraft-data": "^0.17.0",
-    "prismarine-world": "^0.5.5",
+    "minecraft-data": "^1.0.0",
+    "prismarine-world": "^1.0.0",
     "require-self": "^0.1.0",
     "babel": "^5.8.34"
   }
