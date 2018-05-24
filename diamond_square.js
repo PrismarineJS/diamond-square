@@ -1,6 +1,5 @@
 'use strict'
 
-const Chunk = require('prismarine-chunk')('1.8')
 const Vec3 = require('vec3').Vec3
 const rand = require('random-seed')
 
@@ -81,9 +80,10 @@ class DiamondSquare {
   }
 }
 
-function generation ({seed, worldHeight = 80, waterline = 20} = {}) {
+function generation ({version = '1.8', seed, worldHeight = 80, waterline = 20} = {}) {
   // Selected empirically
   const size = 10000000
+  const Chunk = require('prismarine-chunk')(version)
   const space = new DiamondSquare(size, size / 500, seed)
 
   function generateSimpleChunk (chunkX, chunkZ) {
