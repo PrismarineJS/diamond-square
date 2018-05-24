@@ -1,4 +1,7 @@
 # Diamond-square
+[![NPM version](https://img.shields.io/npm/v/diamond-square.svg)](http://npmjs.com/package/diamond-square)
+[![Build Status](https://circleci.com/gh/PrismarineJS/diamond-square/tree/master.svg?style=shield)](https://circleci.com/gh/PrismarineJS/diamond-square/tree/master)
+
 A diamond square minecraft generation
 
 ## Usage
