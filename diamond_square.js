@@ -80,7 +80,7 @@ class DiamondSquare {
   }
 }
 
-function generation ({version = '1.8', seed, worldHeight = 80, waterline = 20} = {}) {
+function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 } = {}) {
   // Selected empirically
   const size = 10000000
   const Chunk = require('prismarine-chunk')(version)
