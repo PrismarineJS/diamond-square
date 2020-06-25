@@ -3,6 +3,8 @@
 const Vec3 = require('vec3').Vec3
 const rand = require('random-seed')
 
+var theFlattering = [ "1.13", "1.14", "1.15", "1.16"]
+
 class DiamondSquare {
   constructor (size, roughness, seed) {
     // public fields
@@ -84,6 +86,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
   // Selected empirically
   const size = 10000000
   const Chunk = require('prismarine-chunk')(version)
+  const mcData = require('minecraft-data')(version)
   const space = new DiamondSquare(size, size / 500, seed)
 
   function generateSimpleChunk (chunkX, chunkZ) {
@@ -101,31 +104,47 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
         for (let y = 0; y < 256; y++) {
           let block
           let data
-
-          const surfaceblock = level < waterline ? 12 : 2 // Sand below water, grass
-          const belowblock = level < waterline ? 12 : 3 // 3-5 blocks below surface
-
-          if (y < bedrockheight) block = 7 // Solid bedrock at bottom
-          else if (y < level && y >= dirtheight) block = belowblock // Dirt/sand below surface
-          else if (y < level) block = 1 // Set stone inbetween
-          else if (y === level) block = surfaceblock // Set surface sand/grass
-          else if (y <= waterline) block = 9 // Set the water
-          else if (y === level + 1 && level >= waterline && seedRand(10) === 0) { // 1/10 chance of grass
-            block = 31
-            data = 1
+          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : isFlatteringVersion(version) ?  mcData.blocksByName.grass_block.id :  mcData.blocksByName.grass.id // Sand below water, grass
+          const belowblock = level < waterline ? mcData.blocksByName.sand.id : mcData.blocksByName.dirt.id // 3-5 blocks below surface
+          if (y < bedrockheight) block = mcData.blocksByName.bedrock.id // Solid bedrock at bottom
+          else if (y < level && y >= dirtheight) {
+            block = belowblock // Dirt/sand below surface
+            if (isFlatteringVersion()) {
+              if (level < waterline) data = 0 // Default sand data is 0
+              else data = 1 // Default dirt data is 1, 0 is snowy
+            }
           }
-
+          else if (y < level) block = mcData.blocksByName.stone.id // Set stone inbetween
+          else if (y === level) {
+            block = surfaceblock // Set surface sand/grass
+            if (isFlatteringVersion()) {
+              if (level < waterline) data = 0 // Default sand data is 0
+              else data = 1 // Default dirt data is 1, 0 is snowy
+            }
+          }
+          else if (y <= waterline) block = mcData.blocksByName.water.id // Set the water
+          else if (y === level + 1 && level >= waterline && seedRand(10) === 0) { // 1/10 chance of grass
+            block = mcData.blocksByName.grass.id
+            data = 0
+          }
           const pos = new Vec3(x, y, z)
           if (block) chunk.setBlockType(pos, block)
-          if (data) chunk.setBlockData(pos, data)
+          if (data) {
+            if (isFlatteringVersion) chunk.setBlockData(pos, data)
+            else chunk.setBlockData(pos, data)
+          }
           chunk.setSkyLight(pos, 15)
         }
       }
     }
-
     return chunk
   }
   return generateSimpleChunk
+}
+
+function isFlatteringVersion(version) {
+  theFlattering.indexOf(version > -1)
+    return true
 }
 
 module.exports = generation
