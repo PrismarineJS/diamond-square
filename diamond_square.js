@@ -104,7 +104,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
         for (let y = 0; y < 256; y++) {
           let block
           let data
-          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : isFlatteringVersion(version) ?  mcData.blocksByName.grass_block.id :  mcData.blocksByName.grass.id // Sand below water, grass
+          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : isFlatteningVersion(version) ?  mcData.blocksByName.grass_block.id :  mcData.blocksByName.grass.id // Sand below water, grass
           const belowblock = level < waterline ? mcData.blocksByName.sand.id : mcData.blocksByName.dirt.id // 3-5 blocks below surface
           if (y < bedrockheight) block = mcData.blocksByName.bedrock.id // Solid bedrock at bottom
           else if (y < level && y >= dirtheight) {
