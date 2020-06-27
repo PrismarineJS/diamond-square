@@ -3,7 +3,7 @@
 const Vec3 = require('vec3').Vec3
 const rand = require('random-seed')
 
-var theFlattering = [ "1.13", "1.14", "1.15", "1.16"]
+var theFlattening = [ "1.13", "1.14", "1.15", "1.16"]
 
 class DiamondSquare {
   constructor (size, roughness, seed) {
