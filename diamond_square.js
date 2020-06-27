@@ -109,7 +109,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
           if (y < bedrockheight) block = mcData.blocksByName.bedrock.id // Solid bedrock at bottom
           else if (y < level && y >= dirtheight) {
             block = belowblock // Dirt/sand below surface
-            if (isFlatteringVersion()) {
+            if (isFlatteningVersion()) {
               if (level < waterline) data = 0 // Default sand data is 0
               else data = 1 // Default dirt data is 1, 0 is snowy
             }
@@ -117,7 +117,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
           else if (y < level) block = mcData.blocksByName.stone.id // Set stone inbetween
           else if (y === level) {
             block = surfaceblock // Set surface sand/grass
-            if (isFlatteringVersion()) {
+            if (isFlatteningVersion()) {
               if (level < waterline) data = 0 // Default sand data is 0
               else data = 1 // Default dirt data is 1, 0 is snowy
             }
@@ -130,7 +130,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
           const pos = new Vec3(x, y, z)
           if (block) chunk.setBlockType(pos, block)
           if (data) {
-            if (isFlatteringVersion) chunk.setBlockData(pos, data)
+            if (isFlatteningVersion) chunk.setBlockData(pos, data)
             else chunk.setBlockData(pos, data)
           }
           chunk.setSkyLight(pos, 15)
@@ -142,8 +142,8 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
   return generateSimpleChunk
 }
 
-function isFlatteringVersion(version) {
-  theFlattering.indexOf(version > -1)
+function isFlatteningVersion(version) {
+  theFlattening.indexOf(version > -1)
     return true
 }
 
