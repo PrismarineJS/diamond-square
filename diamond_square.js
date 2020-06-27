@@ -148,7 +148,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
 }
 
 function isFlatteningVersion(version) {
-  if (theFlattening.indexOf(version) > 1)
+  if (theFlattening.indexOf(version) > -1)
     return true
   else
     return false
