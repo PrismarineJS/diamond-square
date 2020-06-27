@@ -3,7 +3,7 @@
 const Vec3 = require('vec3').Vec3
 const rand = require('random-seed')
 
-const theFlattening = [ "1.13.2", "1.14", "1.15", "1.16"]
+const theFlattening = [ "1.13", "1.14", "1.15", "1.16"]
 
 class DiamondSquare {
   constructor (size, roughness, seed) {
@@ -87,6 +87,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
   const size = 10000000
   const Chunk = require('prismarine-chunk')(version)
   const mcData = require('minecraft-data')(version)
+  const majorVersion = mcData.version.majorVersion
   const space = new DiamondSquare(size, size / 500, seed)
 
   function generateSimpleChunk (chunkX, chunkZ) {
@@ -109,7 +110,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
           if (y < bedrockheight) block = mcData.blocksByName.bedrock.id // Solid bedrock at bottom
           else if (y < level && y >= dirtheight) {
             block = belowblock // Dirt/sand below surface
-            if (isFlatteningVersion(version)) {
+            if (isFlatteningVersion(majorVersion)) {
               if (level < waterline) data = 0 // Default sand data is 0
               else data = 1 // Default dirt data is 1, 0 is snowy
             }
@@ -117,14 +118,14 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
           else if (y < level) block = mcData.blocksByName.stone.id // Set stone inbetween
           else if (y === level) {
             block = surfaceblock // Set surface sand/grass
-            if (isFlatteningVersion(version)) {
+            if (isFlatteningVersion(majorVersion)) {
               if (level < waterline) data = 0 // Default sand data is 0
               else data = 1 // Default dirt data is 1, 0 is snowy
             }
           }
           else if (y <= waterline) block = mcData.blocksByName.water.id // Set the water
           else if (y === level + 1 && level >= waterline && seedRand(10) === 0) { // 1/10 chance of grass
-            if (isFlatteningVersion(version)) {
+            if (isFlatteningVersion(majorVersion)) {
               block = mcData.blocksByName.grass.id
               data = 0
             } else {
