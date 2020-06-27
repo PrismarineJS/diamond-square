@@ -24,6 +24,10 @@ world.getBlock(new Vec3(3, 50, 3)).then(block => console.log(JSON.stringify(bloc
 
 ## History
 
+### 1.2.0
+
+* add 1.13 support (thanks @Deudly)
+
 ### 1.1.0
 
 * convert to standard + make api compatible with multiple versions
