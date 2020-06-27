@@ -93,7 +93,6 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
   function generateSimpleChunk (chunkX, chunkZ) {
     const chunk = new Chunk()
     const seedRand = rand.create(seed + ':' + chunkX + ':' + chunkZ)
-
     const worldX = chunkX * 16 + size / 2
     const worldZ = chunkZ * 16 + size / 2
 
@@ -105,7 +104,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
         for (let y = 0; y < 256; y++) {
           let block
           let data
-          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : (isFlatteningVersion(version) ?  mcData.blocksByName.grass_block.id :  mcData.blocksByName.grass.id) // Sand below water, grass
+          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : (isFlatteningVersion(majorVersion) ?  mcData.blocksByName.grass_block.id :  mcData.blocksByName.grass.id) // Sand below water, grass
           const belowblock = level < waterline ? mcData.blocksByName.sand.id : mcData.blocksByName.dirt.id // 3-5 blocks below surface
           if (y < bedrockheight) block = mcData.blocksByName.bedrock.id // Solid bedrock at bottom
           else if (y < level && y >= dirtheight) {
@@ -136,7 +135,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
           const pos = new Vec3(x, y, z)
           if (block) chunk.setBlockType(pos, block)
           if (data) {
-            if (isFlatteningVersion) chunk.setBlockData(pos, data)
+            if (isFlatteningVersion(majorVersion)) chunk.setBlockData(pos, data)
             else chunk.setBlockData(pos, data)
           }
           chunk.setSkyLight(pos, 15)
