@@ -3,7 +3,7 @@
 const Vec3 = require('vec3').Vec3
 const rand = require('random-seed')
 
-const theFlattening = [ "1.13", "1.14", "1.15", "1.16"]
+const theFlattening = ['1.13', '1.14', '1.15', '1.16']
 
 class DiamondSquare {
   constructor (size, roughness, seed) {
@@ -104,7 +104,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
         for (let y = 0; y < 256; y++) {
           let block
           let data
-          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : (isFlatteningVersion(majorVersion) ?  mcData.blocksByName.grass_block.id :  mcData.blocksByName.grass.id) // Sand below water, grass
+          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : (isFlatteningVersion(majorVersion) ? mcData.blocksByName.grass_block.id : mcData.blocksByName.grass.id) // Sand below water, grass
           const belowblock = level < waterline ? mcData.blocksByName.sand.id : mcData.blocksByName.dirt.id // 3-5 blocks below surface
           if (y < bedrockheight) block = mcData.blocksByName.bedrock.id // Solid bedrock at bottom
           else if (y < level && y >= dirtheight) {
@@ -113,16 +113,14 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
               if (level < waterline) data = 0 // Default sand data is 0
               else data = 1 // Default dirt data is 1, 0 is snowy
             }
-          }
-          else if (y < level) block = mcData.blocksByName.stone.id // Set stone inbetween
+          } else if (y < level) block = mcData.blocksByName.stone.id // Set stone inbetween
           else if (y === level) {
             block = surfaceblock // Set surface sand/grass
             if (isFlatteningVersion(majorVersion)) {
               if (level < waterline) data = 0 // Default sand data is 0
               else data = 1 // Default dirt data is 1, 0 is snowy
             }
-          }
-          else if (y <= waterline) block = mcData.blocksByName.water.id // Set the water
+          } else if (y <= waterline) block = mcData.blocksByName.water.id // Set the water
           else if (y === level + 1 && level >= waterline && seedRand(10) === 0) { // 1/10 chance of grass
             if (isFlatteningVersion(majorVersion)) {
               block = mcData.blocksByName.grass.id
@@ -147,11 +145,8 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
   return generateSimpleChunk
 }
 
-function isFlatteningVersion(version) {
-  if (theFlattening.indexOf(version) > -1)
-    return true
-  else
-    return false
+function isFlatteningVersion (version) {
+  if (theFlattening.indexOf(version) > -1) { return true } else { return false }
 }
 
 module.exports = generation
