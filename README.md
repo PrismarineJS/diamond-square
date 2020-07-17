@@ -1,6 +1,6 @@
 # Diamond-square
 [![NPM version](https://img.shields.io/npm/v/diamond-square.svg)](http://npmjs.com/package/diamond-square)
-[![Build Status](https://circleci.com/gh/PrismarineJS/diamond-square/tree/master.svg?style=shield)](https://circleci.com/gh/PrismarineJS/diamond-square/tree/master)
+[![Build Status](https://github.com/PrismarineJS/diamond-square/workflows/CI/badge.svg)](https://github.com/PrismarineJS/diamond-square/actions?query=workflow%3A%22CI%22)
 
 A diamond square minecraft generation
 
