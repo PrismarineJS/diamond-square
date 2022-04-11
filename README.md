@@ -24,6 +24,10 @@ world.getBlock(new Vec3(3, 50, 3)).then(block => console.log(JSON.stringify(bloc
 
 ## History
 
+### 1.3.0
+
+* Bump mcdata
+
 ### 1.2.0
 
 * add 1.13 support (thanks @Deudly)
