@@ -36,6 +36,6 @@
     "minecraft-data": "^3.0.0",
     "prismarine-world": "^3.0.0",
     "require-self": "^0.2.3",
-    "standard": "^16.0.1"
+    "standard": "^17.0.0"
   }
 }
