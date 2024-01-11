@@ -126,7 +126,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
               block = mcData.blocksByName.grass.id
               data = 0
             } else {
-              block = mcData.blocksByName.tallgrass.id
+              block = mcData.blocksByName.tall_grass?.id ?? mcData.blocksByName.tallgrass?.id
               data = 1
             }
           }
