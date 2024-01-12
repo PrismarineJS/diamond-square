@@ -78,7 +78,7 @@ class DiamondSquare {
 
 function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, size = 10000000, roughness = null } = {}) {
   const Chunk = require('prismarine-chunk')(version)
-  const registry = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
   // Selected empirically
   if (roughness === null) roughness = size / 500
