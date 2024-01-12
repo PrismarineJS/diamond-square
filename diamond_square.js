@@ -90,40 +90,117 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, 
     const worldX = chunkX * 16 + size / 2
     const worldZ = chunkZ * 16 + size / 2
 
+    const levels = []
     for (let x = 0; x < 16; x++) {
+      levels.push([])
       for (let z = 0; z < 16; z++) {
         const level = Math.floor(space.value(worldX + x, worldZ + z) * worldHeight)
-        const dirtheight = level - 4 + seedRand(3)
-        const bedrockheight = 1 + seedRand(4)
+        levels[x].push({
+          surface: level,
+          bedrock: level - 4 + seedRand(3),
+          soil: 1 + seedRand(4)
+        })
+        // Set sky light
         for (let y = 0; y < 256; y++) {
-          const pos = new Vec3(x, y, z)
-          if (y < bedrockheight) {
-            chunk.setBlockType(pos, registry.blocksByName.bedrock.id)
-          } else if (y < level && y >= dirtheight) {
-            if (level < waterline) {
-              chunk.setBlockType(pos, registry.blocksByName.sand.id)
-              if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 0)
-            } else {
-              chunk.setBlockType(pos, registry.blocksByName.dirt.id)
-              if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 1)
-            }
-          } else if (y < level) {
-            chunk.setBlockType(pos, registry.blocksByName.stone.id)
-          } else if (y === level) {
-            if (level < waterline) {
-              chunk.setBlockType(pos, registry.blocksByName.sand.id)
-              if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 0)
-            } else {
-              chunk.setBlockType(pos, registry.blocksByName.grass_block?.id ?? registry.blocksByName.grass.id)
-              if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 1)
-            }
-          } else if (y <= waterline) {
-            chunk.setBlockType(pos, registry.blocksByName.water.id)
-          } else if (y === level + 1 && level >= waterline && seedRand(10) === 0) {
-            chunk.setBlockType(pos, registry.blocksByName.tall_grass?.id ?? registry.blocksByName.tallgrass?.id ?? registry.blocksByName.grass.id)
-            if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 0)
+          chunk.setSkyLight(new Vec3(x, y, z), 15)
+        }
+      }
+    }
+    // Bedrock, Stone, soil, surface, and water layers
+    for (let x = 0; x < 16; x++) {
+      for (let z = 0; z < 16; z++) {
+        const { bedrock, soil, surface } = levels[x][z]
+        // Bedrock Layer
+        for (let y = 0; y <= bedrock; y++) {
+          chunk.setBlockType(new Vec3(x, y, z), registry.blocksByName.bedrock.id)
+        }
+        // Stone Layer
+        for (let y = bedrock + 1; y <= soil; y++) {
+          chunk.setBlockType(new Vec3(x, y, z), registry.blocksByName.stone.id)
+        }
+        // Soil Layer
+        for (let y = soil + 1; y < surface; y++) {
+          const vec = new Vec3(x, y, z)
+          if (surface - waterline < 2) {
+            chunk.setBlockType(vec, registry.blocksByName.sand.id)
+            if (registry.supportFeature('theFlattening')) chunk.setBlockData(vec, 0)
+          } else {
+            chunk.setBlockType(vec, registry.blocksByName.dirt.id)
+            if (registry.supportFeature('theFlattening')) chunk.setBlockData(vec, 1)
           }
-          chunk.setSkyLight(pos, 15)
+        }
+        // Surface Layer
+        if (surface - waterline < 2) {
+          chunk.setBlockType(new Vec3(x, surface, z), registry.blocksByName.sand.id)
+          if (registry.supportFeature('theFlattening')) chunk.setBlockData(new Vec3(x, surface, z), 0)
+        } else {
+          chunk.setBlockType(new Vec3(x, surface, z), registry.blocksByName.grass_block?.id ?? registry.blocksByName.grass.id)
+          if (registry.supportFeature('theFlattening')) chunk.setBlockData(new Vec3(x, surface, z), 1)
+        }
+        // Water Layer
+        for (let y = surface + 1; y <= waterline; y++) {
+          chunk.setBlockType(new Vec3(x, y, z), registry.blocksByName.water.id)
+        }
+      }
+    }
+    // Decorations: grass, flowers, sugar cane, cactus, dead bushes, kelp, seagrass, tall seagrass, tall grass, double tall grass, etc...
+    for (let x = 0; x < 16; x++) {
+      for (let z = 0; z < 16; z++) {
+        const { surface } = levels[x][z]
+        const surfaceVec = new Vec3(x, surface, z)
+        const decorationVec = new Vec3(x, surface + 1, z)
+        const surfaceBlock = chunk.getBlockType(surfaceVec)
+        if (waterline - surface > 0) { // Underwater decorations: kelp, seagrass, tall seagrass
+          if ('seagrass' in registry.blocksByName && waterline - surface >= 2 && seedRand(20) === 0) { // Seagrass
+            chunk.setBlockType(decorationVec, registry.blocksByName.seagrass.id)
+            if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec, 1)
+          } else if ('tall_seagrass' in registry.blocksByName && waterline - surface >= 3 && seedRand(40) === 0) { // Tall seagrass
+            const decorationVec2 = decorationVec.offset(0, 1, 0)
+            chunk.setBlockType(decorationVec, registry.blocksByName.tall_seagrass.id)
+            chunk.setBlockType(decorationVec2, registry.blocksByName.tall_seagrass.id)
+            if (registry.supportFeature('theFlattening')) {
+              chunk.setBlockData(decorationVec, 1)
+              chunk.setBlockData(decorationVec2, 0)
+            }
+          } else if ('kelp' in registry.blocksByName && waterline - surface >= 5 && seedRand(40) === 0) { // Kelp
+            const height = Math.min(seedRand(10) + 2, waterline - surface)
+            for (let i = 0; i < height; i++) {
+              let decorationVec2 = decorationVec.offset(0, i, 0)
+              chunk.setBlockType(decorationVec2, registry.blocksByName.kelp.id)
+              if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec2, i === size - 1 ? 1 : 2)
+            }
+          }
+        } else if (surfaceBlock === registry.blocksByName.grass_block?.id ?? registry.blocksByName.grass.id) { // Above water decorations: tall grass, double tall grass, flowers
+          if (seedRand(20) === 0) { // Tall grass
+            chunk.setBlockType(decorationVec, registry.blocksByName.tallgrass?.id ?? registry.blocksByName.grass.id)
+            if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec, 1)
+          } else if ('tall_grass' in registry.blocksByName && seedRand(40) === 0) { // Double tall grass
+            const decorationVec2 = decorationVec.offset(0, 1, 0)
+            chunk.setBlockType(decorationVec, registry.blocksByName.tall_grass?.id)
+            chunk.setBlockType(decorationVec2, registry.blocksByName.tall_grass?.id)
+            if (registry.supportFeature('theFlattening')) {
+              chunk.setBlockData(decorationVec, 1)
+              chunk.setBlockData(decorationVec2, 0)
+            }
+          } else if (seedRand(50) === 0) { // Flowers
+            const flower = registry.blocksByName[seedRand(2) === 0 ? 'dandelion' : 'poppy']
+            chunk.setBlockType(decorationVec, flower.id)
+          }
+        } else if (surfaceBlock === registry.blocksByName.sand.id) { // Above water decorations: sugar cane, cactus, dead bushes
+          if (seedRand(50) === 0 && [[-1, 0, 0], [0, 0, -1], [0, 0, 1], [1, 0, 0]].every(offset => chunk.getBlockType(decorationVec.offset(...offset)) === registry.blocksByName.air.id)) {
+            const height = seedRand(3) + 1
+            for (let i = 0; i < height; i++) {
+              let decorationVec2 = decorationVec.offset(0, i, 0)
+              chunk.setBlockType(decorationVec2, registry.blocksByName.cactus.id)
+              if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec2, i === height - 1 ? 1 : 0)
+            }
+          } else if (seedRand(20) == 0 && [[-1, 0, -1], [-1, 0, 0], [-1, 0, 1], [0, 0, -1], [0, 0, 1], [1, 0, -1], [1, 0, 0], [1, 0, 1]].some(offset => chunk.getBlockType(surfaceVec.offset(...offset)) === registry.blocksByName.water.id)) { // Sugar cane
+            const height = seedRand(3) + 1
+            for (let i = 0; i < height; i++) {
+              let decorationVec2 = decorationVec.offset(0, i, 0)
+              chunk.setBlockType(decorationVec2, registry.blocksByName.reeds?.id ?? registry.blocksByName.sugar_cane.id)
+            }
+          }
         }
       }
     }
