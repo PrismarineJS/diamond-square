@@ -24,6 +24,9 @@ world.getBlock(new Vec3(3, 50, 3)).then(block => console.log(JSON.stringify(bloc
 
 ## History
 
+### 1.5.0
+* [Update publish.yml](https://github.com/PrismarineJS/diamond-square/commit/4e5681e3d12fbeca9f809c472ecbb148689fabaf) (thanks @rom1504)
+
 ### 1.4.0
 * [`tallgrass` was renamed to `tall_grass` (#15)](https://github.com/PrismarineJS/diamond-square/commit/ded51456c73243088f721ad5f8665ff16b2aab8c) (thanks @Pandapip1)
 * [Add command gh workflow allowing to use release command in comments (#14)](https://github.com/PrismarineJS/diamond-square/commit/57bbf99d116cb787f8c99c069c7aa2ad49377a94) (thanks @rom1504)
