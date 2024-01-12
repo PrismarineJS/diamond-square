@@ -1,9 +1,7 @@
 'use strict'
 
-const Vec3 = require('vec3').Vec3
+const { Vec3 } = require('vec3')
 const rand = require('random-seed')
-
-const theFlattening = ['1.13', '1.14', '1.15', '1.16']
 
 class DiamondSquare {
   constructor (size, roughness, seed) {
@@ -19,14 +17,9 @@ class DiamondSquare {
 
   // public methods
   value (x, y, v) {
-    x = parseInt(x)
-    y = parseInt(y)
-    if (typeof (v) !== 'undefined') { this.val(x, y, v) } else { return this.val(x, y) }
-  };
-
-  // private methods
-  val (x, y, v) {
-    if (typeof (v) !== 'undefined') { this.data[x + '_' + y] = Math.max(0.0, Math.min(1.0, v)) } else {
+    if (typeof x == 'string') x = parseInt(x)
+    if (typeof y == 'string') y = parseInt(y)
+    if (typeof v !== 'undefined') { this.data[x + '_' + y] = Math.max(0.0, Math.min(1.0, v)) } else {
       if (x <= 0 || x >= this.size || y <= 0 || y >= this.size) return 0.0
 
       if (this.data[x + '_' + y] == null) {
@@ -40,6 +33,7 @@ class DiamondSquare {
     }
   }
 
+  // private methods
   randFromPair (x, y) {
     let xm7, xm13, xm1301081, ym8461, ym105467, ym105943
     for (let i = 0; i < 80; i++) {
@@ -63,32 +57,32 @@ class DiamondSquare {
 
   squareStep (x, y, blockSize) {
     if (this.data[x + '_' + y] == null) {
-      this.val(x, y,
-        this.displace((this.val(x - blockSize, y - blockSize) +
-          this.val(x + blockSize, y - blockSize) +
-          this.val(x - blockSize, y + blockSize) +
-          this.val(x + blockSize, y + blockSize)) / 4, blockSize, x, y))
+      this.value(x, y,
+        this.displace((this.value(x - blockSize, y - blockSize) +
+          this.value(x + blockSize, y - blockSize) +
+          this.value(x - blockSize, y + blockSize) +
+          this.value(x + blockSize, y + blockSize)) / 4, blockSize, x, y))
     }
   }
 
   diamondStep (x, y, blockSize) {
     if (this.data[x + '_' + y] == null) {
-      this.val(x, y,
-        this.displace((this.val(x - blockSize, y) +
-          this.val(x + blockSize, y) +
-          this.val(x, y - blockSize) +
-          this.val(x, y + blockSize)) / 4, blockSize, x, y))
+      this.value(x, y,
+        this.displace((this.value(x - blockSize, y) +
+          this.value(x + blockSize, y) +
+          this.value(x, y - blockSize) +
+          this.value(x, y + blockSize)) / 4, blockSize, x, y))
     }
   }
 }
 
-function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 } = {}) {
-  // Selected empirically
-  const size = 10000000
+function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, size = 10000000, roughness = null } = {}) {
   const Chunk = require('prismarine-chunk')(version)
-  const mcData = require('minecraft-data')(version)
-  const majorVersion = mcData.version.majorVersion
-  const space = new DiamondSquare(size, size / 500, seed)
+  const registry = require('minecraft-data')(version)
+
+  // Selected empirically
+  if (roughness === null) roughness = size / 500
+  const space = new DiamondSquare(size, roughness, seed)
 
   function generateSimpleChunk (chunkX, chunkZ) {
     const chunk = new Chunk()
@@ -102,39 +96,32 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
         const dirtheight = level - 4 + seedRand(3)
         const bedrockheight = 1 + seedRand(4)
         for (let y = 0; y < 256; y++) {
-          let block
-          let data
-          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : (isFlatteningVersion(majorVersion) ? mcData.blocksByName.grass_block.id : mcData.blocksByName.grass.id) // Sand below water, grass
-          const belowblock = level < waterline ? mcData.blocksByName.sand.id : mcData.blocksByName.dirt.id // 3-5 blocks below surface
-          if (y < bedrockheight) block = mcData.blocksByName.bedrock.id // Solid bedrock at bottom
-          else if (y < level && y >= dirtheight) {
-            block = belowblock // Dirt/sand below surface
-            if (isFlatteningVersion(majorVersion)) {
-              if (level < waterline) data = 0 // Default sand data is 0
-              else data = 1 // Default dirt data is 1, 0 is snowy
-            }
-          } else if (y < level) block = mcData.blocksByName.stone.id // Set stone inbetween
-          else if (y === level) {
-            block = surfaceblock // Set surface sand/grass
-            if (isFlatteningVersion(majorVersion)) {
-              if (level < waterline) data = 0 // Default sand data is 0
-              else data = 1 // Default dirt data is 1, 0 is snowy
-            }
-          } else if (y <= waterline) block = mcData.blocksByName.water.id // Set the water
-          else if (y === level + 1 && level >= waterline && seedRand(10) === 0) { // 1/10 chance of grass
-            if (isFlatteningVersion(majorVersion)) {
-              block = mcData.blocksByName.grass.id
-              data = 0
-            } else {
-              block = mcData.blocksByName.tall_grass?.id ?? mcData.blocksByName.tallgrass?.id
-              data = 1
-            }
-          }
           const pos = new Vec3(x, y, z)
-          if (block) chunk.setBlockType(pos, block)
-          if (data) {
-            if (isFlatteningVersion(majorVersion)) chunk.setBlockData(pos, data)
-            else chunk.setBlockData(pos, data)
+          if (y < bedrockheight) {
+            chunk.setBlockType(pos, registry.blocksByName.bedrock.id)
+          } else if (y < level && y >= dirtheight) {
+            if (level < waterline) {
+              chunk.setBlockType(pos, registry.blocksByName.sand.id)
+              if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 0)
+            } else {
+              chunk.setBlockType(pos, registry.blocksByName.dirt.id)
+              if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 1)
+            }
+          } else if (y < level) {
+            chunk.setBlockType(pos, registry.blocksByName.stone.id)
+          } else if (y === level) {
+            if (level < waterline) {
+              chunk.setBlockType(pos, registry.blocksByName.sand.id)
+              if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 0)
+            } else {
+              chunk.setBlockType(pos, registry.blocksByName.grass_block?.id ?? registry.blocksByName.grass.id)
+              if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 1)
+            }
+          } else if (y <= waterline) {
+            chunk.setBlockType(pos, registry.blocksByName.water.id)
+          } else if (y === level + 1 && level >= waterline && seedRand(10) === 0) {
+            chunk.setBlockType(pos, registry.blocksByName.tall_grass?.id ?? registry.blocksByName.tallgrass?.id ?? registry.blocksByName.grass.id)
+            if (registry.supportFeature('theFlattening')) chunk.setBlockData(pos, 0)
           }
           chunk.setSkyLight(pos, 15)
         }
@@ -143,10 +130,6 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
     return chunk
   }
   return generateSimpleChunk
-}
-
-function isFlatteningVersion (version) {
-  if (theFlattening.indexOf(version) > -1) { return true } else { return false }
 }
 
 module.exports = generation
