@@ -1,6 +1,6 @@
 {
   "name": "diamond-square",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "A diamond square minecraft generation",
   "main": "diamond_square.js",
   "scripts": {
