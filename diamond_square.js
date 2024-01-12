@@ -195,7 +195,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, 
               chunk.setBlockType(decorationVec2, registry.blocksByName.cactus.id)
               if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec2, i === height - 1 ? 1 : 0)
             }
-          } else if (seedRand(20) == 0 && [[-1, 0, -1], [-1, 0, 0], [-1, 0, 1], [0, 0, -1], [0, 0, 1], [1, 0, -1], [1, 0, 0], [1, 0, 1]].some(offset => chunk.getBlockType(surfaceVec.offset(...offset)) === registry.blocksByName.water.id)) { // Sugar cane
+          } else if (seedRand(20) === 0 && [[-1, 0, -1], [-1, 0, 0], [-1, 0, 1], [0, 0, -1], [0, 0, 1], [1, 0, -1], [1, 0, 0], [1, 0, 1]].some(offset => chunk.getBlockType(surfaceVec.offset(...offset)) === registry.blocksByName.water.id)) { // Sugar cane
             const height = seedRand(3) + 1
             for (let i = 0; i < height; i++) {
               const decorationVec2 = decorationVec.offset(0, i, 0)
