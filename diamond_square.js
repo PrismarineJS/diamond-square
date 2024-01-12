@@ -17,8 +17,8 @@ class DiamondSquare {
 
   // public methods
   value (x, y, v) {
-    if (typeof x == 'string') x = parseInt(x)
-    if (typeof y == 'string') y = parseInt(y)
+    if (typeof x === 'string') x = parseInt(x)
+    if (typeof y === 'string') y = parseInt(y)
     if (typeof v !== 'undefined') { this.data[x + '_' + y] = Math.max(0.0, Math.min(1.0, v)) } else {
       if (x <= 0 || x >= this.size || y <= 0 || y >= this.size) return 0.0
 
