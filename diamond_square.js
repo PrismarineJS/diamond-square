@@ -4,9 +4,9 @@ const { Vec3 } = require('vec3')
 const rand = require('random-seed')
 
 class Perlin {
-  constructor (seed, n_octaves = 4) {
+  constructor (seed, numOctaves = 4) {
     // public fields
-    this.n_octaves = n_octaves
+    this.numOctaves = numOctaves
     this.seed = seed
     this.rng = rand.create(seed)
     this.xSinAmplitudes = []
@@ -14,7 +14,7 @@ class Perlin {
     this.ySinAmplitudes = []
     this.ySinOffsets = []
 
-    for (let i = 0; i < n_octaves; i++) {
+    for (let i = 0; i < numOctaves; i++) {
       const power = Math.pow(Math.E, i)
 
       this.xSinAmplitudes.push((i + 1))
@@ -83,7 +83,7 @@ class Worley {
         let curFactorial = 1
         let curExp = 1
         for (let i = 0; true; i++) {
-          if (i != 0) {
+          if (i !== 0) {
             curFactorial *= i
             curExp *= this.expectedPoints
           }
@@ -274,27 +274,18 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, 
         const surfaceVec = new Vec3(x, surface, z)
         const decorationVec = new Vec3(x, surface + 1, z)
         const waterDepth = Math.max(currentWaterline - surface, 0)
-        // Grass
-        if (['forest', 'plains'].includes('biome') && placements(20) === 0) {
+        if (['forest', 'plains'].includes('biome') && placements(20) === 0) { // Grass
           chunk.setBlockType(decorationVec, registry.blocksByName.tallgrass?.id ?? registry.blocksByName.grass.id)
           if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec, 0)
-        }
-        // Flowers
-        else if (['forest', 'plains'].includes(biome) && placements(50) === 0) {
+        } else if (['forest', 'plains'].includes(biome) && placements(50) === 0) { // Flowers
           const flower = registry.blocksByName[placements(2) === 0 ? 'dandelion' : 'poppy']
           chunk.setBlockType(decorationVec, flower.id)
-        }
-        // Dead bushes
-        else if (['desert'].includes(biome) && placements(50) === 0) {
+        } else if (['desert'].includes(biome) && placements(50) === 0) { // Dead bushes
           chunk.setBlockType(decorationVec, registry.blocksByName.dead_bush.id)
-        }
-        // Seagrass
-        else if ('seagrass' in registry.blocksByName && ['river', 'ocean'].includes(biome) && waterDepth >= 2 && placements(20) === 0) {
+        } else if ('seagrass' in registry.blocksByName && ['river', 'ocean'].includes(biome) && waterDepth >= 2 && placements(20) === 0) { // Seagrass
           chunk.setBlockType(decorationVec, registry.blocksByName.seagrass.id)
           if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec, 1)
-        }
-        // Double tall grass
-        else if ('tall_grass' in registry.blocksByName && ['forest', 'plains'].includes(biome) && placements(40) === 0) {
+        } else if ('tall_grass' in registry.blocksByName && ['forest', 'plains'].includes(biome) && placements(40) === 0) { // Double tall grass
           const decorationVec2 = decorationVec.offset(0, 1, 0)
           chunk.setBlockType(decorationVec, registry.blocksByName.tall_grass?.id)
           chunk.setBlockType(decorationVec2, registry.blocksByName.tall_grass?.id)
@@ -302,9 +293,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, 
             chunk.setBlockData(decorationVec, 1)
             chunk.setBlockData(decorationVec2, 0)
           }
-        }
-        // Double tall seagrass
-        else if ('tall_seagrass' in registry.blocksByName && ['river', 'ocean'].includes(biome) && waterDepth >= 3 && placements(40) === 0) {
+        } else if ('tall_seagrass' in registry.blocksByName && ['river', 'ocean'].includes(biome) && waterDepth >= 3 && placements(40) === 0) { // Double tall seagrass
           const decorationVec2 = decorationVec.offset(0, 1, 0)
           chunk.setBlockType(decorationVec, registry.blocksByName.tall_seagrass?.id)
           chunk.setBlockType(decorationVec2, registry.blocksByName.tall_seagrass?.id)
@@ -312,26 +301,20 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, 
             chunk.setBlockData(decorationVec, 1)
             chunk.setBlockData(decorationVec2, 0)
           }
-        }
-        // Sugar cane
-        else if (['river', 'ocean'].includes(biome) && !waterDepth && [[-1, 0, 0], [0, 0, -1], [0, 0, 1], [1, 0, 0]].some(offset => chunk.getBlockType(surfaceVec.offset(...offset)) === registry.blocksByName.water.id) && placements(20) === 0) {
+        } else if (['river', 'ocean'].includes(biome) && !waterDepth && [[-1, 0, 0], [0, 0, -1], [0, 0, 1], [1, 0, 0]].some(offset => chunk.getBlockType(surfaceVec.offset(...offset)) === registry.blocksByName.water.id) && placements(20) === 0) { // Sugar cane
           const height = placements(3) + 1
           for (let i = 0; i < height; i++) {
             const decorationVec2 = decorationVec.offset(0, i, 0)
             chunk.setBlockType(decorationVec2, registry.blocksByName.reeds?.id ?? registry.blocksByName.sugar_cane.id)
           }
-        }
-        // Cactus
-        else if (['desert'].includes(biome) && !waterDepth && [[-1, 0, -1], [-1, 0, 0], [-1, 0, 1], [0, 0, -1], [0, 0, 1], [1, 0, -1], [1, 0, 0], [1, 0, 1]].every(offset => chunk.getBlockType(decorationVec.offset(...offset)) === registry.blocksByName.air.id) && placements(50) === 0) {
+        } else if (['desert'].includes(biome) && !waterDepth && [[-1, 0, -1], [-1, 0, 0], [-1, 0, 1], [0, 0, -1], [0, 0, 1], [1, 0, -1], [1, 0, 0], [1, 0, 1]].every(offset => chunk.getBlockType(decorationVec.offset(...offset)) === registry.blocksByName.air.id) && placements(50) === 0) { // Cactus
           const height = placements(3) + 1
           for (let i = 0; i < height; i++) {
             const decorationVec2 = decorationVec.offset(0, i, 0)
             chunk.setBlockType(decorationVec2, registry.blocksByName.cactus.id)
             if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec2, i === height - 1 ? 1 : 0)
           }
-        }
-        // Kelp
-        else if ('kelp' in registry.blocksByName && ['ocean'].includes(biome) && waterDepth >= 3 && placements(40) === 0) {
+        } else if ('kelp' in registry.blocksByName && ['ocean'].includes(biome) && waterDepth >= 3 && placements(40) === 0) { // Kelp
           const height = placements(waterDepth - 3) + 2
           for (let i = 0; i < height - 1; i++) {
             const decorationVec2 = decorationVec.offset(0, i, 0)
