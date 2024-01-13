@@ -31,7 +31,7 @@ class Perlin {
     if (typeof y === 'string') y = parseInt(y)
 
     let value = 0.0
-    for (let i = 0; i < this.n_octaves; i++) {
+    for (let i = 0; i < this.numOctaves; i++) {
       const power = Math.pow(Math.E, i + 1)
       value += this.xSinAmplitudes[i] * Math.sin((x - this.xSinOffsets[i]) / power)
       value += this.ySinAmplitudes[i] * Math.sin((y - this.ySinOffsets[i]) / power)
