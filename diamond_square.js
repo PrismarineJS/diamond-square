@@ -153,7 +153,6 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, 
   const soilNoise = new Perlin(seedRand(0, maxInt))
   const bedrockNoise = new Perlin(seedRand(0, maxInt))
   const biomeNoise = new Worley(0.00001, seedRand(0, maxInt))
-  const riverNoise = new Worley(0.001, seedRand(0, maxInt))
 
   const biomes = [
     ...duplicateArr(['plains'], 15),
@@ -175,7 +174,6 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, 
         const bedrockNoiseValue = bedrockNoise.value(worldX + x, worldZ + z)
         const soilNoiseValue = soilNoise.value(worldX + x, worldZ + z)
         const biomeNoiseIndex = biomeNoise.pointIndex(worldX + x, worldZ + z)
-        const riverNoiseValue = riverNoise.value(worldX + x, worldZ + z)
 
         let biome = biomes[biomeNoiseIndex % biomes.length]
 
@@ -183,14 +181,6 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, 
         let surface = Math.floor(surfaceNoiseValue * worldHeight)
         const soil = surface - 2 - Math.floor(soilNoiseValue * 3)
         let currentWaterline = waterline
-
-        if (riverNoiseValue >= 0.8) {
-          biome = 'river'
-        }
-        if (riverNoiseValue >= 0.9) {
-          currentWaterline = Math.max(currentWaterline, surface)
-          surface -= Math.min(Math.ceil((riverNoiseValue - 0.9) / 0.1), 10)
-        }
 
         if (surface - waterline < 2) {
           biome = 'ocean'
