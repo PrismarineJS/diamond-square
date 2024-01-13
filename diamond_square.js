@@ -17,10 +17,10 @@ class Perlin {
     for (let i = 0; i < numOctaves; i++) {
       const power = Math.pow(Math.E, i)
 
-      this.xSinAmplitudes.push((i + 1))
+      this.xSinAmplitudes.push((i + 1) * (i + 1))
       this.xSinOffsets.push(this.rng(1) * power)
 
-      this.ySinAmplitudes.push((i + 1))
+      this.ySinAmplitudes.push((i + 1) * (i + 1))
       this.ySinOffsets.push(this.rng(1) * power)
     }
   }
@@ -36,7 +36,7 @@ class Perlin {
       value += this.xSinAmplitudes[i] * Math.sin((x - this.xSinOffsets[i]) / power)
       value += this.ySinAmplitudes[i] * Math.sin((y - this.ySinOffsets[i]) / power)
     }
-    return 1 / (1 + Math.pow(Math.E, value / 100))
+    return 1 / (1 + Math.pow(Math.E, value / 70))
   }
 }
 
@@ -141,7 +141,7 @@ function duplicateArr (arr, times) {
   return Array(times).fill([...arr]).reduce((a, b) => a.concat(b))
 }
 
-function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20, size = 10000000, roughness = null } = {}) {
+function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, size = 10000000, roughness = null } = {}) {
   const Chunk = require('prismarine-chunk')(version)
   const registry = require('prismarine-registry')(version)
 
