@@ -291,18 +291,18 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
         const surfaceVec = new Vec3(x, surface, z)
         const decorationVec = new Vec3(x, surface + 1, z)
         const waterDepth = Math.max(currentWaterline - surface, 0)
-        if (['forest', 'plains'].includes('biome') && placements(20) === 0) { // Grass
+        if (['forest', 'plains'].includes('biome') && placements(30) === 0) { // Grass
           chunk.setBlockType(decorationVec, registry.blocksByName.tallgrass?.id ?? registry.blocksByName.grass.id)
           if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec, 0)
-        } else if (['forest', 'plains'].includes(biome) && placements(50) === 0) { // Flowers
+        } else if (['forest', 'plains'].includes(biome) && placements(100) === 0) { // Flowers
           const flower = registry.blocksByName[placements(2) === 0 ? 'dandelion' : 'poppy']
           chunk.setBlockType(decorationVec, flower.id)
-        } else if (['desert'].includes(biome) && placements(50) === 0) { // Dead bushes
+        } else if (['desert'].includes(biome) && placements(100) === 0) { // Dead bushes
           chunk.setBlockType(decorationVec, registry.blocksByName.dead_bush.id)
-        } else if ('seagrass' in registry.blocksByName && ['river', 'ocean'].includes(biome) && waterDepth >= 2 && placements(20) === 0) { // Seagrass
+        } else if ('seagrass' in registry.blocksByName && ['river', 'ocean'].includes(biome) && waterDepth >= 2 && placements(30) === 0) { // Seagrass
           chunk.setBlockType(decorationVec, registry.blocksByName.seagrass.id)
           if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec, 1)
-        } else if ('tall_grass' in registry.blocksByName && ['forest', 'plains'].includes(biome) && placements(40) === 0) { // Double tall grass
+        } else if ('tall_grass' in registry.blocksByName && ['forest', 'plains'].includes(biome) && placements(120) === 0) { // Double tall grass
           const decorationVec2 = decorationVec.offset(0, 1, 0)
           chunk.setBlockType(decorationVec, registry.blocksByName.tall_grass?.id)
           chunk.setBlockType(decorationVec2, registry.blocksByName.tall_grass?.id)
@@ -318,13 +318,13 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
             chunk.setBlockData(decorationVec, 1)
             chunk.setBlockData(decorationVec2, 0)
           }
-        } else if (['river', 'ocean'].includes(biome) && !waterDepth && [[-1, 0, 0], [0, 0, -1], [0, 0, 1], [1, 0, 0]].some(offset => chunk.getBlockType(surfaceVec.offset(...offset)) === registry.blocksByName.water.id) && placements(20) === 0) { // Sugar cane
+        } else if (['river', 'ocean'].includes(biome) && !waterDepth && [[-1, 0, 0], [0, 0, -1], [0, 0, 1], [1, 0, 0]].some(offset => chunk.getBlockType(surfaceVec.offset(...offset)) === registry.blocksByName.water.id) && placements(75) === 0) { // Sugar cane
           const height = placements(3) + 1
           for (let i = 0; i < height; i++) {
             const decorationVec2 = decorationVec.offset(0, i, 0)
             chunk.setBlockType(decorationVec2, registry.blocksByName.reeds?.id ?? registry.blocksByName.sugar_cane.id)
           }
-        } else if (['desert'].includes(biome) && !waterDepth && [[-1, 0, -1], [-1, 0, 0], [-1, 0, 1], [0, 0, -1], [0, 0, 1], [1, 0, -1], [1, 0, 0], [1, 0, 1]].every(offset => chunk.getBlockType(decorationVec.offset(...offset)) === registry.blocksByName.air.id) && placements(50) === 0) { // Cactus
+        } else if (['desert'].includes(biome) && !waterDepth && [[-1, 0, -1], [-1, 0, 0], [-1, 0, 1], [0, 0, -1], [0, 0, 1], [1, 0, -1], [1, 0, 0], [1, 0, 1]].every(offset => chunk.getBlockType(decorationVec.offset(...offset)) === registry.blocksByName.air.id) && placements(250) === 0) { // Cactus
           const height = placements(3) + 1
           for (let i = 0; i < height; i++) {
             const decorationVec2 = decorationVec.offset(0, i, 0)
