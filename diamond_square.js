@@ -153,7 +153,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
   const soilNoise = new Perlin(seedRand(0, maxInt))
   const soilNoise2 = new Perlin(seedRand(0, maxInt))
   const bedrockNoise = new Perlin(seedRand(0, maxInt))
-  const biomeNoise = new Worley(0.00001, seedRand(0, maxInt))
+  const biomeNoise = new Worley(0.00005, seedRand(0, maxInt))
 
   const biomes = [
     ...duplicateArr(['plains'], 15),
