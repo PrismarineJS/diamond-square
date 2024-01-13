@@ -360,9 +360,9 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
             [1, -1, 1],
             [-1, -1, 1],
             [1, -1, -1],
-            [-1, -1, -1],
+            [-1, -1, -1]
           ]
-          for (let [offsetX, offsetY, offsetZ] of offsets) {
+          for (const [offsetX, offsetY, offsetZ] of offsets) {
             chunk.setBlockType(topOfTree.offset(offsetX, offsetY, offsetZ), registry.blocksByName.oak_leaves.id)
             if (registry.supportFeature('theFlattening')) {
               chunk.setBlockData(topOfTree.offset(offsetX, offsetY, offsetZ), 0)
