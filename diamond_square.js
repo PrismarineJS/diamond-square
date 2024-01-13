@@ -294,7 +294,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
         if (['forest', 'plains'].includes('biome') && placements(30) === 0) { // Grass
           chunk.setBlockType(decorationVec, registry.blocksByName.tallgrass?.id ?? registry.blocksByName.grass.id)
           if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec, 0)
-        } else if (['forest', 'plains'].includes(biome) && placements(100) === 0) { // Flowers
+        } else if (['plains'].includes(biome) && placements(100) === 0) { // Flowers
           const flower = registry.blocksByName[placements(2) === 0 ? 'dandelion' : 'poppy']
           chunk.setBlockType(decorationVec, flower.id)
         } else if (['desert'].includes(biome) && placements(100) === 0) { // Dead bushes
@@ -339,6 +339,46 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
           }
           const decorationVec2 = decorationVec.offset(0, height - 1, 0)
           chunk.setBlockType(decorationVec2, registry.blocksByName.kelp.id)
+        } else if ((biome === 'plains' && placements(3000) === 0) || (biome === 'forest' && placements(200) === 0)) { // Trees
+          const height = placements(4) + 4
+          for (let i = 0; i < height; i++) {
+            const decorationVec2 = decorationVec.offset(0, i, 0)
+            chunk.setBlockType(decorationVec2, registry.blocksByName.oak_log.id)
+            if (registry.supportFeature('theFlattening')) chunk.setBlockData(decorationVec2, 1)
+          }
+          const topOfTree = decorationVec.offset(0, height, 0)
+          const offsets = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [-1, 0, 0],
+            [0, 0, 1],
+            [0, 0, -1],
+            [1, -1, 0],
+            [-1, -1, 0],
+            [0, -1, 1],
+            [0, -1, -1],
+            [1, -1, 1],
+            [-1, -1, 1],
+            [1, -1, -1],
+            [-1, -1, -1],
+          ]
+          for (let [offsetX, offsetY, offsetZ] of offsets) {
+            chunk.setBlockType(topOfTree.offset(offsetX, offsetY, offsetZ), registry.blocksByName.oak_leaves.id)
+            if (registry.supportFeature('theFlattening')) {
+              chunk.setBlockData(topOfTree.offset(offsetX, offsetY, offsetZ), 0)
+            }
+          }
+          for (let i = height - 3; i < height - 1; i++) {
+            for (let dx = -2; dx <= 2; dx++) {
+              for (let dz = -2; dz <= 2; dz++) {
+                if (dx === 0 && dz === 0) continue
+                chunk.setBlockType(decorationVec.offset(dx, i, dz), registry.blocksByName.oak_leaves.id)
+                if (registry.supportFeature('theFlattening')) {
+                  chunk.setBlockData(decorationVec.offset(dx, i, dz), 0)
+                }
+              }
+            }
+          }
         }
       }
     }
