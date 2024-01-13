@@ -178,9 +178,9 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
         let biome = biomes[biomeNoiseIndex % biomes.length]
 
         const bedrock = Math.floor(bedrockNoiseValue * 5)
-        let surface = Math.floor(surfaceNoiseValue * worldHeight)
+        const surface = Math.floor(surfaceNoiseValue * worldHeight)
         const soil = surface - 2 - Math.floor(soilNoiseValue * 3)
-        let currentWaterline = waterline
+        const currentWaterline = waterline
 
         if (surface - waterline < 2) {
           biome = 'ocean'
