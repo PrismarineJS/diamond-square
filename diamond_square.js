@@ -151,6 +151,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
   const maxInt = 2 ^ 53 - 1
   const surfaceNoise = new Perlin(seedRand(0, maxInt))
   const soilNoise = new Perlin(seedRand(0, maxInt))
+  const soilNoise2 = new Perlin(seedRand(0, maxInt))
   const bedrockNoise = new Perlin(seedRand(0, maxInt))
   const biomeNoise = new Worley(0.00001, seedRand(0, maxInt))
 
@@ -173,16 +174,18 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
         const surfaceNoiseValue = surfaceNoise.value(worldX + x, worldZ + z)
         const bedrockNoiseValue = bedrockNoise.value(worldX + x, worldZ + z)
         const soilNoiseValue = soilNoise.value(worldX + x, worldZ + z)
+        const soilNoise2Value = soilNoise2.value(worldX + x, worldZ + z)
         const biomeNoiseIndex = biomeNoise.pointIndex(worldX + x, worldZ + z)
 
         let biome = biomes[biomeNoiseIndex % biomes.length]
 
         const bedrock = Math.floor(bedrockNoiseValue * 5)
         const surface = Math.floor(surfaceNoiseValue * worldHeight)
-        const soil = surface - 2 - Math.floor(soilNoiseValue * 3)
+        const soil = surface - 1 - Math.floor(soilNoiseValue * 3)
+        const soil2 = soil - 1 - Math.floor(soilNoise2Value * 3)
         const currentWaterline = waterline
 
-        if (surface - waterline < 2) {
+        if (surface - waterline < 1) {
           biome = 'ocean'
         }
 
@@ -190,6 +193,7 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
           surface,
           bedrock,
           soil,
+          soil2,
           biome,
           currentWaterline
         })
@@ -203,16 +207,39 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 32, 
     // Bedrock, Stone, soil, surface, and water layers
     for (let x = 0; x < 16; x++) {
       for (let z = 0; z < 16; z++) {
-        const { bedrock, soil, surface, currentWaterline, biome } = levels[x][z]
+        const { bedrock, soil, soil2, surface, currentWaterline, biome } = levels[x][z]
         // Bedrock Layer
         for (let y = 0; y <= bedrock; y++) {
           chunk.setBlockType(new Vec3(x, y, z), registry.blocksByName.bedrock.id)
         }
         // Stone Layer
-        for (let y = bedrock + 1; y <= soil; y++) {
+        for (let y = bedrock + 1; y <= soil2; y++) {
           chunk.setBlockType(new Vec3(x, y, z), registry.blocksByName.stone.id)
         }
-        // Soil Layer
+        // Soil Layer 2
+        for (let y = soil2 + 1; y <= soil; y++) {
+          const vec = new Vec3(x, y, z)
+          switch (biome) {
+            case 'river':
+            case 'ocean':
+              chunk.setBlockType(vec, registry.blocksByName.dirt.id)
+              break
+            case 'desert':
+              chunk.setBlockType(vec, registry.blocksByName.sandstone.id)
+              break
+            case 'mountains':
+              chunk.setBlockType(vec, registry.blocksByName.stone.id)
+              break
+            case 'forest':
+            case 'plains':
+              chunk.setBlockType(vec, registry.blocksByName.dirt.id)
+              if (registry.supportFeature('theFlattening')) chunk.setBlockData(vec, 1)
+              break
+            default:
+              throw new Error('Unknown biome: ' + biome)
+          }
+        }
+        // Soil Layer 1
         for (let y = soil + 1; y < surface; y++) {
           const vec = new Vec3(x, y, z)
           switch (biome) {
