@@ -3,8 +3,6 @@
 const Vec3 = require('vec3').Vec3
 const rand = require('random-seed')
 
-const theFlattening = ['1.13', '1.14', '1.15', '1.16']
-
 class DiamondSquare {
   constructor (size, roughness, seed) {
     // public fields
@@ -82,13 +80,28 @@ class DiamondSquare {
   }
 }
 
-function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 } = {}) {
+function generation ({ registry, version = '1.8', seed, worldHeight = 80, waterline = 20 } = {}) {
+  registry ??= require('prismarine-registry')(version)
+  const isFlatteningVersion = registry.supportFeature('theFlattening')
   // Selected empirically
   const size = 10000000
-  const Chunk = require('prismarine-chunk')(version)
-  const mcData = require('minecraft-data')(version)
-  const majorVersion = mcData.version.majorVersion
+  const Chunk = require('prismarine-chunk')(registry)
   const space = new DiamondSquare(size, size / 500, seed)
+
+  const blockPalette = {
+    water: registry.blocksByName.water.defaultState,
+    stone: registry.blocksByName.stone.defaultState,
+    bedrock: registry.blocksByName.bedrock.defaultState,
+    sand: registry.blocksByName.sand.defaultState,
+    grassBlock: (registry.blocksByName.grass_block ?? registry.blocksByName.grass).defaultState,
+    tallgrass: (registry.blocksByName.tall_grass ?? registry.blocksByName.tallgrass).defaultState,
+    dirt: registry.blocksByName.dirt.defaultState
+  }
+  if (!isFlatteningVersion) {
+    // 1.8-1.12 - for state IDs, the final 4 bits are the data value
+    blockPalette.grassBlock |= 1 // 0 is snowy
+    // Default sand data is 0, but we don't need to set it as it's already 0
+  }
 
   function generateSimpleChunk (chunkX, chunkZ) {
     const chunk = new Chunk()
@@ -102,40 +115,24 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
         const dirtheight = level - 4 + seedRand(3)
         const bedrockheight = 1 + seedRand(4)
         for (let y = 0; y < 256; y++) {
-          let block
-          let data
-          const surfaceblock = level < waterline ? mcData.blocksByName.sand.id : (isFlatteningVersion(majorVersion) ? mcData.blocksByName.grass_block.id : mcData.blocksByName.grass.id) // Sand below water, grass
-          const belowblock = level < waterline ? mcData.blocksByName.sand.id : mcData.blocksByName.dirt.id // 3-5 blocks below surface
-          if (y < bedrockheight) block = mcData.blocksByName.bedrock.id // Solid bedrock at bottom
-          else if (y < level && y >= dirtheight) {
+          let block = null
+          const surfaceblock = level < waterline ? blockPalette.sand : blockPalette.grassBlock // Sand below water, grass
+          const belowblock = level < waterline ? blockPalette.sand : blockPalette.dirt // 3-5 blocks below surface
+          if (y < bedrockheight) {
+            block = blockPalette.bedrock // Solid bedrock at bottom
+          } else if (y < level && y >= dirtheight) {
             block = belowblock // Dirt/sand below surface
-            if (isFlatteningVersion(majorVersion)) {
-              if (level < waterline) data = 0 // Default sand data is 0
-              else data = 1 // Default dirt data is 1, 0 is snowy
-            }
-          } else if (y < level) block = mcData.blocksByName.stone.id // Set stone inbetween
-          else if (y === level) {
+          } else if (y < level) {
+            block = blockPalette.stone // Set stone inbetween
+          } else if (y === level) {
             block = surfaceblock // Set surface sand/grass
-            if (isFlatteningVersion(majorVersion)) {
-              if (level < waterline) data = 0 // Default sand data is 0
-              else data = 1 // Default dirt data is 1, 0 is snowy
-            }
-          } else if (y <= waterline) block = mcData.blocksByName.water.id // Set the water
-          else if (y === level + 1 && level >= waterline && seedRand(10) === 0) { // 1/10 chance of grass
-            if (isFlatteningVersion(majorVersion)) {
-              block = mcData.blocksByName.grass.id
-              data = 0
-            } else {
-              block = mcData.blocksByName.tall_grass?.id ?? mcData.blocksByName.tallgrass?.id
-              data = 1
-            }
+          } else if (y <= waterline) {
+            block = blockPalette.water // Set the water
+          } else if (y === level + 1 && level >= waterline && seedRand(10) === 0) { // 1/10 chance of tall grass
+            block = blockPalette.tallgrass
           }
           const pos = new Vec3(x, y, z)
-          if (block) chunk.setBlockType(pos, block)
-          if (data) {
-            if (isFlatteningVersion(majorVersion)) chunk.setBlockData(pos, data)
-            else chunk.setBlockData(pos, data)
-          }
+          if (block != null) chunk.setBlockStateId(pos, block)
           chunk.setSkyLight(pos, 15)
         }
       }
@@ -143,10 +140,6 @@ function generation ({ version = '1.8', seed, worldHeight = 80, waterline = 20 }
     return chunk
   }
   return generateSimpleChunk
-}
-
-function isFlatteningVersion (version) {
-  if (theFlattening.indexOf(version) > -1) { return true } else { return false }
 }
 
 module.exports = generation
