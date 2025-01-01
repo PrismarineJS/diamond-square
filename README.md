@@ -24,6 +24,9 @@ world.getBlock(new Vec3(3, 50, 3)).then(block => console.log(JSON.stringify(bloc
 
 ## History
 
+### 1.6.0
+* [Update for 1.17+ (#20)](https://github.com/PrismarineJS/diamond-square/commit/1b1a097dcb64c95a921f07c07cd239d571175a57) (thanks @extremeheat)
+
 ### 1.5.0
 * [Update publish.yml](https://github.com/PrismarineJS/diamond-square/commit/4e5681e3d12fbeca9f809c472ecbb148689fabaf) (thanks @rom1504)
 
