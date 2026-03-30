@@ -24,6 +24,12 @@ world.getBlock(new Vec3(3, 50, 3)).then(block => console.log(JSON.stringify(bloc
 
 ## History
 
+### 1.7.0
+* [Update CI to Node 24 (#25)](https://github.com/PrismarineJS/diamond-square/commit/bf96a033be58c5a2f1085074055224742c7e6bc3) (thanks @rom1504)
+* [Fix publish condition for npm-publish v4 (#24)](https://github.com/PrismarineJS/diamond-square/commit/be7fa79cba7362f6f513a7e6aa78f97e66f14165) (thanks @rom1504)
+* [Switch to trusted publishing via OIDC (#23)](https://github.com/PrismarineJS/diamond-square/commit/7da053d958d8b6625e7c104b8b8b85941fe3b918) (thanks @rom1504)
+* [node 22 (#22)](https://github.com/PrismarineJS/diamond-square/commit/48828d65708d90a1e709f0b29ba958ed99161de6) (thanks @rom1504)
+
 ### 1.6.0
 * [Update for 1.17+ (#20)](https://github.com/PrismarineJS/diamond-square/commit/1b1a097dcb64c95a921f07c07cd239d571175a57) (thanks @extremeheat)
 
